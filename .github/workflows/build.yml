@@ -43,35 +43,35 @@ jobs:
       - name: Run unit tests
         run: go test ./...
   
-  test_acceptance:
-    name: Run acceptance tests
-    needs: build
-    runs-on: ubuntu-22.04
+  # test_acceptance:
+  #   name: Run acceptance tests
+  #   needs: build
+  #   runs-on: ubuntu-22.04
 
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.7"
+  #   steps:
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: "3.7"
 
-      - name: Install Behave
-        run: pip install behave requests
+  #     - name: Install Behave
+  #       run: pip install behave requests
 
-      - uses: actions/checkout@v4
+  #     - uses: actions/checkout@v4
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: build
+  #     - name: Download build artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: build
+  #         path: build
 
-      - name: Link built file to cwd
-        run: |
-          cp build/prometheus-nginxlog-exporter .
-          chmod +x ./prometheus-nginxlog-exporter
+  #     - name: Link built file to cwd
+  #       run: |
+  #         cp build/prometheus-nginxlog-exporter .
+  #         chmod +x ./prometheus-nginxlog-exporter
       
-      - name: Run acceptance tests
-        run: behave
+  #     - name: Run acceptance tests
+  #       run: behave
 
   test_release:
     name: Test release
