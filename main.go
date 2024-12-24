@@ -320,30 +320,29 @@ func processSource(logger *log.Logger, nsCfg *config.NamespaceConfig, t tail.Fol
 			notCounterValues = labelValues
 		}
 
+		for field, collect := range metrics.OthersMetrics {
+			switch collect.(type) {
+			case *prometheus.GaugeVec:
+				if v, ok := observeMetrics(logger, fields, field, floatFromFields, metrics.ParseErrorsTotal); ok {
+					collect.(*prometheus.GaugeVec).WithLabelValues(notCounterValues...).Set(v)
+				}
+			case *prometheus.CounterVec:
+				if v, ok := observeMetrics(logger, fields, field, floatFromFields, metrics.ParseErrorsTotal); ok {
+					collect.(*prometheus.CounterVec).WithLabelValues(notCounterValues...).Add(v)
+				}
+			case *prometheus.HistogramVec:
+				if v, ok := observeMetrics(logger, fields, field, floatFromFieldsMulti, metrics.ParseErrorsTotal); ok {
+					collect.(*prometheus.HistogramVec).WithLabelValues(notCounterValues...).Observe(v)
+				}
+			case *prometheus.SummaryVec:
+				if v, ok := observeMetrics(logger, fields, field, floatFromFieldsMulti, metrics.ParseErrorsTotal); ok {
+					collect.(*prometheus.SummaryVec).WithLabelValues(notCounterValues...).Observe(v)
+				}
+			default:
+			}
+		}
+
 		metrics.CountTotal.WithLabelValues(labelValues...).Inc()
-
-		if v, ok := observeMetrics(logger, fields, "body_bytes_sent", floatFromFields, metrics.ParseErrorsTotal); ok {
-			metrics.ResponseBytesTotal.WithLabelValues(notCounterValues...).Add(v)
-		}
-
-		if v, ok := observeMetrics(logger, fields, "request_length", floatFromFields, metrics.ParseErrorsTotal); ok {
-			metrics.RequestBytesTotal.WithLabelValues(notCounterValues...).Add(v)
-		}
-
-		if v, ok := observeMetrics(logger, fields, "upstream_response_time", floatFromFieldsMulti, metrics.ParseErrorsTotal); ok {
-			metrics.UpstreamSeconds.WithLabelValues(notCounterValues...).Observe(v)
-			metrics.UpstreamSecondsHist.WithLabelValues(notCounterValues...).Observe(v)
-		}
-
-		if v, ok := observeMetrics(logger, fields, "upstream_connect_time", floatFromFieldsMulti, metrics.ParseErrorsTotal); ok {
-			metrics.UpstreamConnectSeconds.WithLabelValues(notCounterValues...).Observe(v)
-			metrics.UpstreamConnectSecondsHist.WithLabelValues(notCounterValues...).Observe(v)
-		}
-
-		if v, ok := observeMetrics(logger, fields, "request_time", floatFromFields, metrics.ParseErrorsTotal); ok {
-			metrics.ResponseSeconds.WithLabelValues(notCounterValues...).Observe(v)
-			metrics.ResponseSecondsHist.WithLabelValues(notCounterValues...).Observe(v)
-		}
 	}
 
 	return nil

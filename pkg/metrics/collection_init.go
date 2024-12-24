@@ -31,72 +31,54 @@ func (m *Collection) Init(cfg *config.NamespaceConfig) {
 		Help:        "Amount of processed HTTP requests",
 	}, counterLabels)
 
-	m.ResponseBytesTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   cfg.NamespacePrefix,
-		ConstLabels: cfg.NamespaceLabels,
-		Name:        "http_response_size_bytes",
-		Help:        "Total amount of transferred bytes",
-	}, labels)
-
-	m.RequestBytesTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   cfg.NamespacePrefix,
-		ConstLabels: cfg.NamespaceLabels,
-		Name:        "http_request_size_bytes",
-		Help:        "Total amount of received bytes",
-	}, labels)
-
-	m.UpstreamSeconds = prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Namespace:   cfg.NamespacePrefix,
-		ConstLabels: cfg.NamespaceLabels,
-		Name:        "http_upstream_time_seconds",
-		Help:        "Time needed by upstream servers to handle requests",
-		Objectives:  map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
-	}, labels)
-
-	m.UpstreamSecondsHist = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace:   cfg.NamespacePrefix,
-		ConstLabels: cfg.NamespaceLabels,
-		Name:        "http_upstream_time_seconds_hist",
-		Help:        "Time needed by upstream servers to handle requests",
-		Buckets:     cfg.HistogramBuckets,
-	}, labels)
-
-	m.UpstreamConnectSeconds = prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Namespace:   cfg.NamespacePrefix,
-		ConstLabels: cfg.NamespaceLabels,
-		Name:        "http_upstream_connect_time_seconds",
-		Help:        "Time needed to connect to upstream servers",
-		Objectives:  map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
-	}, labels)
-
-	m.UpstreamConnectSecondsHist = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace:   cfg.NamespacePrefix,
-		ConstLabels: cfg.NamespaceLabels,
-		Name:        "http_upstream_connect_time_seconds_hist",
-		Help:        "Time needed to connect to upstream servers",
-		Buckets:     cfg.HistogramBuckets,
-	}, labels)
-
-	m.ResponseSeconds = prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Namespace:   cfg.NamespacePrefix,
-		ConstLabels: cfg.NamespaceLabels,
-		Name:        "http_response_time_seconds",
-		Help:        "Time needed by NGINX to handle requests",
-		Objectives:  map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
-	}, labels)
-
-	m.ResponseSecondsHist = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace:   cfg.NamespacePrefix,
-		ConstLabels: cfg.NamespaceLabels,
-		Name:        "http_response_time_seconds_hist",
-		Help:        "Time needed by NGINX to handle requests",
-		Buckets:     cfg.HistogramBuckets,
-	}, labels)
-
 	m.ParseErrorsTotal = prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace:   cfg.NamespacePrefix,
 		ConstLabels: cfg.NamespaceLabels,
 		Name:        "parse_errors_total",
 		Help:        "Total number of log file lines that could not be parsed",
 	})
+
+	for field, v := range cfg.OthersMetrics {
+		if v.MetricsType&config.MetricsTypeCounter != 0 {
+			m.OthersMetrics[field] = prometheus.NewCounterVec(prometheus.CounterOpts{
+				Namespace:   cfg.NamespacePrefix,
+				ConstLabels: cfg.NamespaceLabels,
+				Name:        v.MetricsName + "_total",
+				Help:        v.MetricsHelp,
+			}, labels)
+		}
+		if v.MetricsType&config.MetricsTypeGauge != 0 {
+			m.OthersMetrics[field] = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+				Namespace:   cfg.NamespacePrefix,
+				ConstLabels: cfg.NamespaceLabels,
+				Name:        v.MetricsName + "_gauge",
+				Help:        v.MetricsHelp,
+			}, labels)
+		}
+		if v.MetricsType&config.MetricsTypeHistogram != 0 {
+			m.OthersMetrics[field] = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+				Namespace:   cfg.NamespacePrefix,
+				ConstLabels: cfg.NamespaceLabels,
+				Name:        v.MetricsName + "_hist",
+				Help:        v.MetricsHelp,
+				Buckets:     v.HistogramBuckets,
+			}, labels)
+		}
+		if v.MetricsType&config.MetricsTypeSummary != 0 {
+			opts := prometheus.SummaryOpts{
+				Namespace:   cfg.NamespacePrefix,
+				ConstLabels: cfg.NamespaceLabels,
+				Name:        v.MetricsName + "_summary",
+				Help:        v.MetricsHelp,
+				Objectives:  map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
+			}
+			if v.MaxAge > 0 {
+				opts.MaxAge = v.MaxAge
+			}
+			if len(v.Objectives) > 0 {
+				opts.Objectives = v.Objectives
+			}
+			m.OthersMetrics[field] = prometheus.NewSummaryVec(opts, labels)
+		}
+	}
 }

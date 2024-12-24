@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/martin-helmich/prometheus-nginxlog-exporter/log"
 )
@@ -33,7 +34,35 @@ type NamespaceConfig struct {
 
 	OrderedLabelNames  []string
 	OrderedLabelValues []string
+
+	// 可以增加额外的指标
+	OthersMetrics map[string]*MetricsInfo `hcl:"others_metrics" yaml:"others_metrics"`
 }
+
+type MetricsInfo struct {
+	// 指标名称
+	MetricsName string `hcl:"metrics_name" yaml:"metrics_name"`
+
+	// 指标帮助信息
+	MetricsHelp string `hcl:"metrics_help" yaml:"metrics_help"`
+
+	// 0: 设置默认指标为空 1: counter 2: gauge 4: histogram 8: summary，可以二进制组合
+	MetricsType int `hcl:"metrics_type" yaml:"metrics_type"`
+
+	// 仅当Type为counter时有效
+	HistogramBuckets []float64 `hcl:"histogram_buckets" yaml:"histogram_buckets"`
+
+	// 仅当Type为summary时有效
+	MaxAge     time.Duration       `hcl:"max_age" yaml:"max_age"`
+	Objectives map[float64]float64 `hcl:"objectives" yaml:"objectives"`
+}
+
+const (
+	MetricsTypeCounter   = 1
+	MetricsTypeGauge     = 2
+	MetricsTypeHistogram = 4
+	MetricsTypeSummary   = 8
+)
 
 type SourceData struct {
 	Files  FileSource    `hcl:"files" yaml:"files"`
