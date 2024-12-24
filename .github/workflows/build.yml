@@ -111,10 +111,10 @@ jobs:
           Subkey-Type: default
           Subkey-Length: 2048
           Name-Real: Github Action
-          Name-Email: helmich-bot@helmich.example
+          Name-Email: baymax-bot@baymax.example
           Expire-Date: seconds=120
           EOF
-          gpg --export-secret-key --armor helmich-bot@helmich.example > /tmp/signing-key
+          gpg --export-secret-key --armor baymax-bot@baymax.example > /tmp/signing-key
 
       - name: Build Goreleaser snapshot release
         uses: goreleaser/goreleaser-action@v5
