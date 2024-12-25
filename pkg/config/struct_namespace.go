@@ -62,6 +62,12 @@ const (
 	MetricsTypeGauge     = 2
 	MetricsTypeHistogram = 4
 	MetricsTypeSummary   = 8
+
+	METRICS_SPLIT        = "|||"
+	METRICS_COUNTER_TAIL = "_counter"
+	METRICS_GAUGE_TAIL   = "_gauge"
+	METRICS_HIST_TAIL    = "_hist"
+	METRICS_SUMMARY_TAIL = "_summary"
 )
 
 type SourceData struct {

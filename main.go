@@ -26,7 +26,6 @@ import (
 	"strings"
 	"sync"
 	"syscall"
-	"time"
 
 	"github.com/BaymaxRice/prometheus-nginxlog-exporter/log"
 	"github.com/BaymaxRice/prometheus-nginxlog-exporter/pkg/config"
@@ -199,7 +198,7 @@ func setupConsul(logger *log.Logger, cfg *config.Config, stopChan <-chan bool, s
 	stopHandlers.Add(1)
 }
 
-func processNamespace(logger *log.Logger, nsCfg *config.NamespaceConfig, metrics *metrics.Collection, stopChan <-chan bool, stopHandlers *sync.WaitGroup) error {
+func processNamespace(logger *log.Logger, nsCfg *config.NamespaceConfig, mts *metrics.Collection, stopChan <-chan bool, stopHandlers *sync.WaitGroup) error {
 	var followers []tail.Follower
 
 	logParser := parser.NewParser(nsCfg)
@@ -266,7 +265,7 @@ func processNamespace(logger *log.Logger, nsCfg *config.NamespaceConfig, metrics
 
 	for _, follower := range followers {
 		go func(f tail.Follower) {
-			if err := processSource(logger, nsCfg, f, logParser, metrics, hasCounterOnlyLabels); err != nil {
+			if err := processSource(logger, nsCfg, f, logParser, mts, hasCounterOnlyLabels); err != nil {
 				errs <- err
 			}
 		}(follower)
@@ -275,7 +274,7 @@ func processNamespace(logger *log.Logger, nsCfg *config.NamespaceConfig, metrics
 	return <-errs
 }
 
-func processSource(logger *log.Logger, nsCfg *config.NamespaceConfig, t tail.Follower, parser parser.Parser, metrics *metrics.Collection, hasCounterOnlyLabels bool) error {
+func processSource(logger *log.Logger, nsCfg *config.NamespaceConfig, t tail.Follower, parser parser.Parser, mts *metrics.Collection, hasCounterOnlyLabels bool) error {
 	relabelings := relabeling.NewRelabelings(nsCfg.RelabelConfigs)
 	relabelings = append(relabelings, relabeling.DefaultRelabelings...)
 	relabelings = relabeling.UniqueRelabelings(relabelings)
@@ -293,19 +292,15 @@ func processSource(logger *log.Logger, nsCfg *config.NamespaceConfig, t tail.Fol
 
 	copy(labelValues, staticLabelValues)
 
-	// logger.Debugf("starting to process cfg: %+v, metrics: %+v", nsCfg, metrics)
-
 	for line := range t.Lines() {
-		id := time.Now().Local().UnixNano()
-		tag := "tagid: " + strconv.FormatInt(id, 10)
 		if nsCfg.PrintLog {
-			fmt.Println(tag + line)
+			fmt.Println(line)
 		}
 
 		fields, err := parser.ParseString(line)
 		if err != nil {
 			logger.Errorf("error while parsing line '%s': %s", line, err)
-			metrics.ParseErrorsTotal.Inc()
+			mts.ParseErrorsTotal.Inc()
 			continue
 		}
 
@@ -325,35 +320,30 @@ func processSource(logger *log.Logger, nsCfg *config.NamespaceConfig, t tail.Fol
 			notCounterValues = labelValues
 		}
 
-		logger.Debugf(tag+" notCounterValues values: %v", notCounterValues)
-
-		for fieldMerge, collect := range metrics.OthersMetrics {
-			fieldArr := strings.Split(fieldMerge, metrics.METRICS_SPLIT)
-			logger.Debugf(tag+" processing fieldMerge: %s, field %s", fieldMerge, fieldArr[0])
+		for fieldMerge, collect := range mts.OthersMetrics {
+			fieldArr := strings.Split(fieldMerge, config.METRICS_SPLIT)
 			switch fieldArr[1] {
-			case metrics.METRICS_GAUGE_TAIL:
-				if v, ok := observeMetrics(logger, fields, fieldArr[0], floatFromFields, metrics.ParseErrorsTotal); ok {
+			case config.METRICS_GAUGE_TAIL:
+				if v, ok := observeMetrics(logger, fields, fieldArr[0], floatFromFields, mts.ParseErrorsTotal); ok {
 					collect.(*prometheus.GaugeVec).WithLabelValues(notCounterValues...).Set(v)
 				}
-			case metrics.METRICS_COUNTER_TAIL:
-				if v, ok := observeMetrics(logger, fields, fieldArr[0], floatFromFields, metrics.ParseErrorsTotal); ok {
+			case config.METRICS_COUNTER_TAIL:
+				if v, ok := observeMetrics(logger, fields, fieldArr[0], floatFromFields, mts.ParseErrorsTotal); ok {
 					collect.(*prometheus.CounterVec).WithLabelValues(notCounterValues...).Add(v)
 				}
-			case metrics.METRICS_HIST_TAIL:
-				if v, ok := observeMetrics(logger, fields, fieldArr[0], floatFromFieldsMulti, metrics.ParseErrorsTotal); ok {
+			case config.METRICS_HIST_TAIL:
+				if v, ok := observeMetrics(logger, fields, fieldArr[0], floatFromFieldsMulti, mts.ParseErrorsTotal); ok {
 					collect.(*prometheus.HistogramVec).WithLabelValues(notCounterValues...).Observe(v)
 				}
-			case metrics.METRICS_SUMMARY_TAIL:
-				if v, ok := observeMetrics(logger, fields, fieldArr[0], floatFromFieldsMulti, metrics.ParseErrorsTotal); ok {
+			case config.METRICS_SUMMARY_TAIL:
+				if v, ok := observeMetrics(logger, fields, fieldArr[0], floatFromFieldsMulti, mts.ParseErrorsTotal); ok {
 					collect.(*prometheus.SummaryVec).WithLabelValues(notCounterValues...).Observe(v)
 				}
 			default:
 			}
 		}
 
-		logger.Debugf(tag+" labelValues values: %v", labelValues)
-
-		metrics.CountTotal.WithLabelValues(labelValues...).Inc()
+		mts.CountTotal.WithLabelValues(labelValues...).Inc()
 	}
 
 	return nil

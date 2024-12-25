@@ -1,19 +1,9 @@
 package metrics
 
 import (
-	"fmt"
-
 	"github.com/BaymaxRice/prometheus-nginxlog-exporter/pkg/config"
 	"github.com/BaymaxRice/prometheus-nginxlog-exporter/pkg/relabeling"
 	"github.com/prometheus/client_golang/prometheus"
-)
-
-const (
-	METRICS_SPLIT        = "|||"
-	METRICS_COUNTER_TAIL = "count"
-	METRICS_GAUGE_TAIL   = "gauge"
-	METRICS_HIST_TAIL    = "hist"
-	METRICS_SUMMARY_TAIL = "summary"
 )
 
 // Init initializes a metrics struct
@@ -34,8 +24,6 @@ func (m *Collection) Init(cfg *config.NamespaceConfig) {
 		counterLabels = append(counterLabels, r.TargetLabel)
 	}
 
-	fmt.Printf("NamespacePrefix: %+v, NamespaceLabels: %+v, counterLabels: %+v,labels: %+v\n", cfg.NamespacePrefix, cfg.NamespaceLabels, counterLabels, labels)
-
 	m.CountTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Namespace:   cfg.NamespacePrefix,
 		ConstLabels: cfg.NamespaceLabels,
@@ -53,26 +41,26 @@ func (m *Collection) Init(cfg *config.NamespaceConfig) {
 	m.OthersMetrics = make(map[string]prometheus.Collector, len(cfg.OthersMetrics))
 	for field, v := range cfg.OthersMetrics {
 		if v.MetricsType&config.MetricsTypeCounter != 0 {
-			m.OthersMetrics[field+METRICS_SPLIT+METRICS_COUNTER_TAIL] = prometheus.NewCounterVec(prometheus.CounterOpts{
+			m.OthersMetrics[field+config.METRICS_SPLIT+config.METRICS_COUNTER_TAIL] = prometheus.NewCounterVec(prometheus.CounterOpts{
 				Namespace:   cfg.NamespacePrefix,
 				ConstLabels: cfg.NamespaceLabels,
-				Name:        v.MetricsName + "_total",
+				Name:        v.MetricsName + config.METRICS_COUNTER_TAIL,
 				Help:        v.MetricsHelp,
 			}, labels)
 		}
 		if v.MetricsType&config.MetricsTypeGauge != 0 {
-			m.OthersMetrics[field+METRICS_SPLIT+METRICS_GAUGE_TAIL] = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+			m.OthersMetrics[field+config.METRICS_SPLIT+config.METRICS_GAUGE_TAIL] = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 				Namespace:   cfg.NamespacePrefix,
 				ConstLabels: cfg.NamespaceLabels,
-				Name:        v.MetricsName + "_gauge",
+				Name:        v.MetricsName + config.METRICS_GAUGE_TAIL,
 				Help:        v.MetricsHelp,
 			}, labels)
 		}
 		if v.MetricsType&config.MetricsTypeHistogram != 0 {
-			m.OthersMetrics[field+METRICS_SPLIT+METRICS_HIST_TAIL] = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+			m.OthersMetrics[field+config.METRICS_SPLIT+config.METRICS_HIST_TAIL] = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 				Namespace:   cfg.NamespacePrefix,
 				ConstLabels: cfg.NamespaceLabels,
-				Name:        v.MetricsName + "_hist",
+				Name:        v.MetricsName + config.METRICS_HIST_TAIL,
 				Help:        v.MetricsHelp,
 				Buckets:     v.HistogramBuckets,
 			}, labels)
@@ -81,7 +69,7 @@ func (m *Collection) Init(cfg *config.NamespaceConfig) {
 			opts := prometheus.SummaryOpts{
 				Namespace:   cfg.NamespacePrefix,
 				ConstLabels: cfg.NamespaceLabels,
-				Name:        v.MetricsName + "_summary",
+				Name:        v.MetricsName + config.METRICS_SUMMARY_TAIL,
 				Help:        v.MetricsHelp,
 				Objectives:  map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
 			}
@@ -91,7 +79,7 @@ func (m *Collection) Init(cfg *config.NamespaceConfig) {
 			if len(v.Objectives) > 0 {
 				opts.Objectives = v.Objectives
 			}
-			m.OthersMetrics[field+METRICS_SPLIT+METRICS_SUMMARY_TAIL] = prometheus.NewSummaryVec(opts, labels)
+			m.OthersMetrics[field+config.METRICS_SPLIT+config.METRICS_SUMMARY_TAIL] = prometheus.NewSummaryVec(opts, labels)
 		}
 	}
 }

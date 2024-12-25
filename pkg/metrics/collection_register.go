@@ -3,7 +3,6 @@ package metrics
 import "github.com/prometheus/client_golang/prometheus"
 
 func (c *Collection) MustRegister(r *prometheus.Registry) {
-	// r.MustRegister(c.CountTotal)
 	// r.MustRegister(c.RequestBytesTotal)
 	// r.MustRegister(c.ResponseBytesTotal)
 	// r.MustRegister(c.UpstreamSeconds)
@@ -12,6 +11,7 @@ func (c *Collection) MustRegister(r *prometheus.Registry) {
 	// r.MustRegister(c.UpstreamConnectSecondsHist)
 	// r.MustRegister(c.ResponseSeconds)
 	// r.MustRegister(c.ResponseSecondsHist)
+	r.MustRegister(c.CountTotal)
 	r.MustRegister(c.ParseErrorsTotal)
 	for _, m := range c.OthersMetrics {
 		r.MustRegister(m)

@@ -1,37 +1,53 @@
 listen:
-  port: 4040
-  address: "10.1.2.3"
-  metrics_endpoint: "/metrics"
-
-consul:
-  enable: true
-  address: "localhost:8500"
-  datacenter: dc1
-  scheme: http
-  token: ""
-  service:
-    id: "nginx-exporter"
-    name: "nginx-exporter"
-    address = "192.168.3.1"
-    tags: ["foo", "bar"]
+  port: 19101
+  # address: "10.1.2.3"
+  # metrics_endpoint: "/metrics"
 
 namespaces:
-  - name: app1
-    format: "$remote_addr - $remote_user [$time_local] \"$request\" $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\" \"$http_x_forwarded_for\""
+  - name: all_cost
+    format: "$remote_addr $server_port $upstream_addr - $remote_user [$time_local] \"$request\" $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\" \"$http_x_forwarded_for\" $request_time $upstream_header_time"
     source:
       files:
-        - /var/log/nginx/app1/access.log
-    # metrics_override:
-    #   prefix: "myprefix"
-    # namespace_label: "vhost"
-    labels:
-      app: "application-one"
-      environment: "production"
-      foo: "bar"
-    histogram_buckets: [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10]
+        # - "/root/docker/nginx/logs/*.access.log"
+        - /root/docker/nginx/logs/sy_443.access.log
+    namespace_label: nginx
+    print_log: true
+    metrics_override:
+      prefix: ""
+    # labels:
+    #   app: "application-one"
+    #   environment: "production"
+    #   foo: "bar"
+    # histogram_buckets: [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10]
+
+    relabel:
+      # - target_label: upstream_addr
+      #   from: upstream_addr
+      - target_label: request
+        from: request
+        split: 2
+        separator: " "
+        only_counter: false
+        match: 
+          - regexp: ".*.(htm|html|gif|jpg|png|css|map|js|ico|eot|svg|ttf|woff|woff2|pdf).*$"
+            replacement: "/frontend-elements"
+          - regexp: "/static.*"
+            replacement: "/static-frontend-elements"
+          - regexp: "(.*?)\\?.*"
+            replacement: "$1?"
+          - regexp: "^(.*)$"
+            replacement: "$1"
+      - target_label: server_port
+        from: server_port
+      - target_label: status
+        from: status
+        only_counter: true
+        # match:
+        #   - regexp: "^[^4][0-9]{2}$"
+        #     replacement: "$1"
 
     # metrics_type: 1: Counter, 2: Gauge, 4: Histogram, 8: Summary, 二进制组合, 对应指标自动添加后缀: _total, _gauge, _hist, _summary
-    others_metrics_type:
+    others_metrics:
       body_bytes_sent:
         metrics_name: "http_response_size_bytes"
         metrics_help: "Total amount of transferred bytes"
@@ -56,8 +72,37 @@ namespaces:
           0.9: 0.01
           0.99: 0.001
 
-  - name: app2
-    format: "$remote_addr - $remote_user [$time_local] \"$request\" $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\" \"$http_x_forwarded_for\" $upstream_response_time"
+  - name: all_count
+    format: "$remote_addr $server_port $upstream_addr - $remote_user [$time_local] \"$request\" $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\" \"$http_x_forwarded_for\" $request_time $upstream_header_time"
     source:
       files:
-        - /var/log/nginx/app2/access.log
+        # - "/root/docker/nginx/logs/*.access.log"
+        - /root/docker/nginx/logs/sy_443.access.log
+    print_log: true
+    namespace_label: nginx
+    metrics_override:
+      prefix: ""
+    # labels:
+    #   app: "application-one"
+    #   environment: "production"
+    #   foo: "bar"
+    # histogram_buckets: [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10]
+
+    relabel:
+      - target_label: upstream_addr
+        from: upstream_addr
+      - target_label: request
+        from: request
+        split: 2
+        separator: " "
+        match: 
+          - regexp: ".*.(htm|html|gif|jpg|png|css|map|js|ico|eot|svg|ttf|woff|woff2|pdf).*$"
+            replacement: "/frontend-elements"
+          - regexp: "/static.*"
+            replacement: "/static-frontend-elements"
+          - regexp: "(.*?)\\?.*"
+            replacement: "$1?"
+          - regexp: "^(.*)$"
+            replacement: "$1"
+      - target_label: server_port
+        from: server_port
