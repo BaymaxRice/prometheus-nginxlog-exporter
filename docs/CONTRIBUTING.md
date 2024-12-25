@@ -42,7 +42,7 @@ When adding new features, please consider the following points:
 
 See [SUPPORT.md](./SUPPORT.md).
 
-[faq]: https://github.com/martin-helmich/prometheus-nginxlog-exporter#frequently-asked-questions
+[faq]: https://github.com/BaymaxRice/prometheus-nginxlog-exporter#frequently-asked-questions
 [pii]: https://en.wikipedia.org/w/index.php?title=Personally_identifiable_information&redirect=no
 [~bug]: https://img.shields.io/badge/-bug-ee0701.svg
 [~enhancement]: https://img.shields.io/badge/-enhancement-84b6eb.svg

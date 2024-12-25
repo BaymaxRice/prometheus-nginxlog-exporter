@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/martin-helmich/prometheus-nginxlog-exporter/log"
+	"github.com/BaymaxRice/prometheus-nginxlog-exporter/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

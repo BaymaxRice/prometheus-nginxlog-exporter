@@ -10,10 +10,10 @@ import (
 type RelabelConfig struct {
 	TargetLabel string              `hcl:",key" yaml:"target_label"`
 	SourceValue string              `hcl:"from" yaml:"from"`
-	Whitelist   []string            `hcl:"whitelist"`
-	Matches     []RelabelValueMatch `hcl:"match"`
-	Split       int                 `hcl:"split"`
-	Separator   string              `hcl:"separator"`
+	Whitelist   []string            `hcl:"whitelist" yaml:"whitelist"`
+	Matches     []RelabelValueMatch `hcl:"match" yaml:"match"`
+	Split       int                 `hcl:"split" yaml:"split"`
+	Separator   string              `hcl:"separator" yaml:"separator"`
 	OnlyCounter bool                `hcl:"only_counter" yaml:"only_counter"`
 
 	WhitelistExists bool
@@ -23,7 +23,7 @@ type RelabelConfig struct {
 // RelabelValueMatch describes a single label match statement
 type RelabelValueMatch struct {
 	RegexpString string `hcl:",key" yaml:"regexp"`
-	Replacement  string `hcl:"replacement"`
+	Replacement  string `hcl:"replacement" yaml:"replacement"`
 
 	CompiledRegexp *regexp.Regexp
 }

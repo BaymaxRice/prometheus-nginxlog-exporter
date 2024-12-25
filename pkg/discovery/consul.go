@@ -1,8 +1,8 @@
 package discovery
 
 import (
+	"github.com/BaymaxRice/prometheus-nginxlog-exporter/pkg/config"
 	"github.com/hashicorp/consul/api"
-	"github.com/martin-helmich/prometheus-nginxlog-exporter/pkg/config"
 )
 
 // ConsulRegistrator is a helper struct that handles Consul service registration

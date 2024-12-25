@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/martin-helmich/prometheus-nginxlog-exporter/log"
+	"github.com/BaymaxRice/prometheus-nginxlog-exporter/log"
 )
 
 // NamespaceConfig is a struct describing single metric namespaces
@@ -27,7 +27,7 @@ type NamespaceConfig struct {
 	Parser           string            `hcl:"parser" yaml:"parser"`
 	Format           string            `hcl:"format" yaml:"format"`
 	Labels           map[string]string `hcl:"labels" yaml:"labels"`
-	RelabelConfigs   []RelabelConfig   `hcl:"relabel" yaml:"relabel_configs"`
+	RelabelConfigs   []RelabelConfig   `hcl:"relabel" yaml:"relabel"`
 	HistogramBuckets []float64         `hcl:"histogram_buckets" yaml:"histogram_buckets"`
 
 	PrintLog bool `hcl:"print_log" yaml:"print_log"`

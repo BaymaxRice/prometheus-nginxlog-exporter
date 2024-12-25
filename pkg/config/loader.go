@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/martin-helmich/prometheus-nginxlog-exporter/log"
+	"github.com/BaymaxRice/prometheus-nginxlog-exporter/log"
 )
 
 // FileFormat describes which kind of configuration file the exporter was started with

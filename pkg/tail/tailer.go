@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/martin-helmich/prometheus-nginxlog-exporter/log"
+	"github.com/BaymaxRice/prometheus-nginxlog-exporter/log"
 	"github.com/nxadm/tail"
 )
 

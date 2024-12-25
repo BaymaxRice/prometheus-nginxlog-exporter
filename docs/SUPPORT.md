@@ -25,7 +25,7 @@ When opening a new issue, please provide the following information:
 
 I'll try to react to support requests in a timely manner. If your issue should not receive any attention after a reasonable amount of time, feel free to ping me in that issue.
 
-[faq]: https://github.com/martin-helmich/prometheus-nginxlog-exporter#frequently-asked-questions
-[qa]: https://github.com/martin-helmich/prometheus-nginxlog-exporter/discussions?discussions_q=category%3AQ%26A
+[faq]: https://github.com/BaymaxRice/prometheus-nginxlog-exporter#frequently-asked-questions
+[qa]: https://github.com/BaymaxRice/prometheus-nginxlog-exporter/discussions?discussions_q=category%3AQ%26A
 [pii]: https://en.wikipedia.org/w/index.php?title=Personally_identifiable_information&redirect=no
 [~question]: https://img.shields.io/badge/-question-cc317c.svg

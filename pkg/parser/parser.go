@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"github.com/martin-helmich/prometheus-nginxlog-exporter/pkg/config"
-	"github.com/martin-helmich/prometheus-nginxlog-exporter/pkg/parser/jsonparser"
-	"github.com/martin-helmich/prometheus-nginxlog-exporter/pkg/parser/textparser"
+	"github.com/BaymaxRice/prometheus-nginxlog-exporter/pkg/config"
+	"github.com/BaymaxRice/prometheus-nginxlog-exporter/pkg/parser/jsonparser"
+	"github.com/BaymaxRice/prometheus-nginxlog-exporter/pkg/parser/textparser"
 )
 
 // Parser parses a line of log to a map[string]string.

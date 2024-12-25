@@ -1,5 +1,3 @@
-github.com/BaymaxRice/prometheus-nginxlog-exporter v0.0.0-20241224122445-dec9ceeea843 h1:hLgXp2wXFLEoCKWILQHkOgFluRNKbOIcvr26TDej3kE=
-github.com/BaymaxRice/prometheus-nginxlog-exporter v0.0.0-20241224122445-dec9ceeea843/go.mod h1:uyRcDrGHYtmUftBtHpNltQqdmPKHpu24MpkNstmO4Go=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=

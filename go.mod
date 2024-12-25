@@ -5,7 +5,6 @@ go 1.20
 require (
 	github.com/hashicorp/consul/api v1.26.1
 	github.com/hashicorp/hcl v1.0.0
-	github.com/martin-helmich/prometheus-nginxlog-exporter v1.11.0
 	github.com/nxadm/tail v1.4.8
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.17.0
@@ -49,5 +48,3 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 )
-
-replace github.com/martin-helmich/prometheus-nginxlog-exporter v1.11.0 => github.com/BaymaxRice/prometheus-nginxlog-exporter v0.0.0-20241224122445-dec9ceeea843

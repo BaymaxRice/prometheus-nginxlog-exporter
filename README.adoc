@@ -10,7 +10,7 @@
 
 image:https://img.shields.io/github/workflow/status/martin-helmich/prometheus-nginxlog-exporter/Compile%20&%20Test[GitHub Workflow Status]
 image:https://quay.io/repository/martinhelmich/prometheus-nginxlog-exporter/status[link="https://quay.io/repository/martinhelmich/prometheus-nginxlog-exporter",Docker Repository on Quay]
-image:https://goreportcard.com/badge/github.com/martin-helmich/prometheus-nginxlog-exporter[link="https://goreportcard.com/report/github.com/martin-helmich/prometheus-nginxlog-exporter", Go Report Card]
+image:https://goreportcard.com/badge/github.com/BaymaxRice/prometheus-nginxlog-exporter[link="https://goreportcard.com/report/github.com/BaymaxRice/prometheus-nginxlog-exporter", Go Report Card]
 image:https://img.shields.io/github/license/martin-helmich/prometheus-nginxlog-exporter[GitHub]
 image:https://img.shields.io/badge/donate-PayPal-yellow[link="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SEARYHPVS9U5N&source=url", Donate]
 
@@ -64,7 +64,7 @@ registries:
   - `quay.io/martinhelmich/prometheus-nginxlog-exporter:v1`
   - `ghcr.io/martin-helmich/prometheus-nginxlog-exporter/exporter:v1`
 
-Have a look at the https://github.com/martin-helmich/prometheus-nginxlog-exporter/releases[releases page]
+Have a look at the https://github.com/BaymaxRice/prometheus-nginxlog-exporter/releases[releases page]
 to see the available versions and how to pull their images. In general, I would
 recommend using the `v1` tag instead of `latest`.
 
@@ -97,17 +97,17 @@ $ docker run \
 
 === DEB and RPM packages
 
-Each https://github.com/martin-helmich/prometheus-nginxlog-exporter/releases[release]
+Each https://github.com/BaymaxRice/prometheus-nginxlog-exporter/releases[release]
 from 1.5.1 or newer provides both DEB and RPM packages.
 
 DEB:
 
-    $ wget https://github.com/martin-helmich/prometheus-nginxlog-exporter/releases/download/v1.9.2/prometheus-nginxlog-exporter_1.9.2_linux_amd64.deb
+    $ wget https://github.com/BaymaxRice/prometheus-nginxlog-exporter/releases/download/v1.9.2/prometheus-nginxlog-exporter_1.9.2_linux_amd64.deb
     $ apt install ./prometheus-nginxlog-exporter_1.9.2_linux_amd64.deb
 
 RPM:
 
-    $ wget https://github.com/martin-helmich/prometheus-nginxlog-exporter/releases/download/v1.9.2/prometheus-nginxlog-exporter_1.9.2_linux_amd64.rpm
+    $ wget https://github.com/BaymaxRice/prometheus-nginxlog-exporter/releases/download/v1.9.2/prometheus-nginxlog-exporter_1.9.2_linux_amd64.rpm
     $ yum localinstall prometheus-nginxlog-exporter_1.9.2_linux_amd64.rpm
 
 The package come with a dependency on systemd and configure the exporter to be
@@ -125,7 +125,7 @@ which you can adjust to your own needs.
 If you do not want to use one of the pre-built packages, you can download the
 binary itself and manually configure systemd to start it. You can find an
 example unit file for this service
-https://github.com/martin-helmich/prometheus-nginxlog-exporter/blob/master/res/package/prometheus-nginxlog-exporter.service[in this repository].
+https://github.com/BaymaxRice/prometheus-nginxlog-exporter/blob/master/res/package/prometheus-nginxlog-exporter.service[in this repository].
 Simply copy the unit file to `/etc/systemd/system`:
 
     $ wget -O /etc/systemd/system/prometheus-nginxlog-exporter.service https://raw.githubusercontent.com/martin-helmich/prometheus-nginxlog-exporter/master/res/package/prometheus-nginxlog-exporter.service
@@ -162,7 +162,7 @@ spec:
       image: nginx
       # ...
     - name: exporter
-      image: docker.pkg.github.com/martin-helmich/prometheus-nginxlog-exporter/exporter:v1
+      image: docker.pkg.github.com/BaymaxRice/prometheus-nginxlog-exporter/exporter:v1
       args: ["-config-file", "/etc/prometheus-nginxlog-exporter/config.hcl"]
       volumeMounts:
       - name: exporter-config
@@ -213,11 +213,11 @@ container and the sidecar share their network namespace).
 
 To build the exporter from source, simply build it with `go get`:
 
-    $ go get github.com/martin-helmich/prometheus-nginxlog-exporter
+    $ go get github.com/BaymaxRice/prometheus-nginxlog-exporter
 
 Alternatively, clone this repository and just run `go build`:
 
-    $ git clone https://github.com/martin-helmich/prometheus-nginxlog-exporter.git
+    $ git clone https://github.com/BaymaxRice/prometheus-nginxlog-exporter.git
     $ cd prometheus-nginxlog-exporter
     $ go build
 
@@ -398,7 +398,7 @@ myprefix_http_response_count_total{vhost="app2", ...}
 * `prefix` can be set to `""`, resulting metrics like `http_response_count_total{...}`
 * `namespace_label` can be omitted - so you have full control on metric format
 
-Some details and history on this can be found in https://github.com/martin-helmich/prometheus-nginxlog-exporter/issues/13[issue #13].
+Some details and history on this can be found in https://github.com/BaymaxRice/prometheus-nginxlog-exporter/issues/13[issue #13].
 
 ### Custom labels pass-through
 
